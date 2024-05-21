@@ -1,0 +1,11 @@
+<!-- Indices written at Tue, 19 Mar 2024 11:09:00 UTC -->
+
+<datastore-indexes autoGenerate="true">
+
+    <!-- Used 1 time in query history -->
+    <datastore-index kind="Score" ancestor="false" source="auto">
+        <property name="name" direction="asc"/>
+        <property name="score" direction="desc"/>
+    </datastore-index>
+
+</datastore-indexes>
