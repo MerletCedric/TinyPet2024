@@ -61,7 +61,7 @@ import com.google.appengine.repackaged.com.google.datastore.v1.PropertyFilter;
 <span class="nc" id="L61">		} catch (EntityNotFoundException e1) {</span>
 			// TODO Auto-generated catch block
 <span class="nc" id="L63">			e1.printStackTrace();</span>
-		}
+<span class="nc" id="L64">		}</span>
 		
 		
 <span class="nc" id="L67">		response.getWriter().print(&quot;&lt;h2&gt; all friends with firstname first0 ? &lt;/h2&gt;&quot;);</span>
@@ -75,7 +75,7 @@ import com.google.appengine.repackaged.com.google.datastore.v1.PropertyFilter;
 <span class="nc bnc" id="L75" title="All 2 branches missed.">		for (Entity entity : result) {</span>
 <span class="nc" id="L76">			response.getWriter().print(&quot;&lt;li&gt;&quot; + entity.getProperty(&quot;firstName&quot;) + &quot;,&quot; + entity.getProperty(&quot;lastName&quot;)</span>
 <span class="nc" id="L77">					+ &quot;,&quot; + entity.getProperty(&quot;age&quot;));</span>
-		}
+<span class="nc" id="L78">		}</span>
 
 
 <span class="nc" id="L81">		response.getWriter().print(&quot;&lt;h2&gt; all friends that have  f94 and f93 as friends and age &gt;67 and age &lt; 96  ? &lt;/h2&gt;&quot;);</span>
@@ -83,8 +83,8 @@ import com.google.appengine.repackaged.com.google.datastore.v1.PropertyFilter;
 		
 <span class="nc" id="L84">		q = new Query(&quot;Friend&quot;)</span>
 <span class="nc" id="L85">				.setFilter(CompositeFilterOperator.and(</span>
-<span class="nc" id="L86">						new FilterPredicate(&quot;friends&quot;, FilterOperator.EQUAL, &quot;f94&quot;),</span>
-<span class="nc" id="L87">						new FilterPredicate(&quot;friends&quot;, FilterOperator.EQUAL, &quot;f93&quot;),</span>
+						new FilterPredicate(&quot;friends&quot;, FilterOperator.EQUAL, &quot;f94&quot;),
+						new FilterPredicate(&quot;friends&quot;, FilterOperator.EQUAL, &quot;f93&quot;),
 <span class="nc" id="L88">						new FilterPredicate(&quot;age&quot;, FilterOperator.GREATER_THAN_OR_EQUAL, 67),</span>
 <span class="nc" id="L89">						new FilterPredicate(&quot;age&quot;, FilterOperator.LESS_THAN_OR_EQUAL, 96) //and &gt;= ??</span>
 						)); //and &gt;= ??
@@ -95,7 +95,7 @@ import com.google.appengine.repackaged.com.google.datastore.v1.PropertyFilter;
 <span class="nc" id="L95">		response.getWriter().print(&quot;&lt;li&gt; result:&quot; + result.size() + &quot;&lt;br&gt;&quot;);</span>
 <span class="nc bnc" id="L96" title="All 2 branches missed.">		for (Entity entity : result) {</span>
 <span class="nc" id="L97">			response.getWriter().print(&quot;&lt;li&gt;&quot; + entity.getProperty(&quot;firstName&quot;));</span>
-		}
+<span class="nc" id="L98">		}</span>
 
 
 <span class="nc" id="L101">		long t1=System.currentTimeMillis();</span>
@@ -109,7 +109,7 @@ import com.google.appengine.repackaged.com.google.datastore.v1.PropertyFilter;
 <span class="nc" id="L109">		response.getWriter().print(&quot;&lt;li&gt; result:&quot; + result.size() + &quot;&lt;br&gt;&quot;);</span>
 <span class="nc bnc" id="L110" title="All 2 branches missed.">		for (Entity entity : result) {</span>
 <span class="nc" id="L111">		    response.getWriter().print(entity.getProperty(&quot;firstName&quot;)+&quot;;&quot;);</span>
-		}
+<span class="nc" id="L112">		}</span>
 <span class="nc" id="L113">		long t2=System.currentTimeMillis();</span>
 
 		
@@ -122,7 +122,7 @@ import com.google.appengine.repackaged.com.google.datastore.v1.PropertyFilter;
 <span class="nc" id="L122">		response.getWriter().print(&quot;&lt;li&gt; result:&quot; + result.size() + &quot;&lt;br&gt;&quot;);</span>
 <span class="nc bnc" id="L123" title="All 2 branches missed.">		for (Entity entity : result) {</span>
 <span class="nc" id="L124">		    response.getWriter().print(entity.getProperty(&quot;firstName&quot;)+&quot;.&quot;);</span>
-		}
+<span class="nc" id="L125">		}</span>
 <span class="nc" id="L126">		long t3=System.currentTimeMillis();</span>
 
 <span class="nc" id="L128">		response.getWriter().print(&quot;&lt;h2&gt; time(Q1) &lt;/h2&gt;&quot;);		</span>
