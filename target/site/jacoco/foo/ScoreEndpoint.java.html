@@ -91,7 +91,7 @@ import com.google.appengine.api.datastore.Transaction;
 	@ApiMethod(name = &quot;myscores&quot;, httpMethod = HttpMethod.GET)
 	public List&lt;Entity&gt; myscores(@Named(&quot;name&quot;) String name) {
 <span class="nc" id="L93">		Query q = new Query(&quot;Score&quot;).setFilter(new FilterPredicate(&quot;name&quot;, FilterOperator.EQUAL, name)).addSort(&quot;score&quot;,</span>
-<span class="nc" id="L94">				SortDirection.DESCENDING);</span>
+				SortDirection.DESCENDING);
         //Query q = new Query(&quot;Score&quot;).setFilter(new FilterPredicate(&quot;name&quot;, FilterOperator.EQUAL, name));
 
 <span class="nc" id="L97">		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();</span>
