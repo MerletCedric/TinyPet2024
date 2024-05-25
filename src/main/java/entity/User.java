@@ -1,6 +1,5 @@
-@Setter 
-@Getter
-@NoArgsConstructor
+package entity;
+
 public class User {
     private int ID;
     private String fullName;
@@ -8,9 +7,11 @@ public class User {
     private String lastName;
     private String email;
 
-    public User(String fullName, String email, String ID) {
+    public User(String fullName, String email, int ID) {
         this.fullName = fullName;
         this.email = email;
         this.ID = ID;
     }
+
+    
 }
