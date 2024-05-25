@@ -12,8 +12,8 @@ import javax.servlet.http.HttpServletResponse;
     urlPatterns = {"/creerpetition"}
 )
 
-public class creerPetition {
-    
+public class creerPetition extends HttpServlet {
+  
 }
 
 

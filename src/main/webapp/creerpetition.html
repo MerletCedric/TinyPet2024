@@ -16,7 +16,50 @@
 </head>
 <body>
 
-<script>
+    <h1>Créer une pétition</h1>
+    <form id="petitionForm">
+        <label for="title">Titre :</label>
+        <input type="text" id="title" name="title" required>
 
-    
-</script>
+        <label for="description">Description :</label>
+        <textarea id="description" name="description" rows="4" required></textarea>
+
+        <label for="creator">Créateur :</label>
+        <input type="text" id="creator" name="creator" required>
+
+        <button type="submit">Créer la pétition</button>
+    </form>
+
+    <script>
+        document.getElementById('petitionForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+            const creator = document.getElementById('creator').value;
+
+            const petition = {
+                title: title,
+                description: description,
+                creator: creator
+            };
+
+            fetch('/petitions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(petition)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                alert('Pétition créée avec succès !');
+                document.getElementById('petitionForm').reset();
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('Erreur lors de la création de la pétition.');
+            });
+        });
+    </script>

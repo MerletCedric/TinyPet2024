@@ -15,6 +15,7 @@ foo/PetitionQuery.class
 foo/Counting$1.class
 foo/PrefixQuery.class
 foo/PetitionServlet.class
+foo/creerPetition.class
 foo/CountingSh$1.class
 foo/Consistency$3.class
 counters/TheGlobalCounter.class
