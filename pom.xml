@@ -18,8 +18,8 @@
   <packaging>war</packaging>
   <version>1.0-SNAPSHOT</version>
 
-  <groupId>momo54</groupId>
-  <artifactId>WebAndCloud</artifactId>
+  <groupId>ManonCedricAlphadjoCherif</groupId>
+  <artifactId>TinyPet</artifactId>
 
   <!--
     The parent pom defines common style checks and testing strategies for our samples.
