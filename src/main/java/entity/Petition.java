@@ -1,43 +1,36 @@
 package entity;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import scorex.util.ArrayList;
+
+import java.util.Date;
 
 public class Petition {
-   private String name;
-   private String date;
-   private List<User> users;
-   private Boolean isSigned;
-   private int countSign = 0;
-
-   public Petition (String name) {
-    this.name = name;
-    this.users = new ArrayList<User>();
-    this.date = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
+   private String title;
+   private String autorId;
+   private String autorName;
+   private String description;
+   private Date date; 
+   private int nbSignatures;
+   
+   public String getTitle() {
+      return this.title;
+   }
+   
+   public String getDescription() {
+    return this.description;
    }
 
-   public String getName() {
-      return this.name;
+   public Object getAutorName() {
+      return this.autorName;
    }
 
-   public String getDate() {
-      return this.date;
+   public void setAutorId(String autorId) {
+      this.autorId = autorId;
    }
 
-   public List<User> getUsers() {
-      return this.users;
+   public void setTitle(String title) {
+      this.title = title;
    }
 
-   public Boolean getIsSigned() {
-      return this.isSigned;
-   }
-
-   public int getCountSign () {
-      return this.countSign;
-   }
-
-   public void setIsSigned(Boolean signed) {
-      this.isSigned = signed;
+   public void setDescription(String description) {
+      this.description = description;
    }
 }

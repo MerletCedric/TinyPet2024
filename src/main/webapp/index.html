@@ -1,25 +1,39 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<html>
 <head>
-<meta http-equiv="content-type"
-	content="application/xhtml+xml; charset=UTF-8" />
-<title>blablabla</title>
+    <meta charset="UTF-8">
+    <title>Créer une pétition</title>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+    <link rel="stylesheet" href="stylesheets/style.css">
+    
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <script src="https://unpkg.com/mithril/mithril.js"></script>
+
+    <script src="https://apis.google.com/js/api.js" async defer></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
 </head>
-
 <body>
-	<h1>TinyPet</h1>
+    <script src="vews/header.js"></script>
+    <script src="vews/creerPetition.js"></script>
+    <script src="vews/listPetitions.js"></script>
+    <script src="vews/footer.js"></script>
+    <script>
+        let App = {
+            view: function() {
+                return [
+                    m(Banner),
+                    m("div.main-content", [
+                        m(PetitionForm),
+                        m(PetitionList)
+                    ]),
+                    m(Footer)
+                ];
+            }
+        };
 
-<h2>Pétition</h2>
-	<li><a href='/creerpetition'>Créer une pétition</a></li>
-
-<h2>Check login Google</h2>	
-	<li><a href="https://developers.google.com/identity/sign-in/web/sign-in#before_you_begin">see docs</a>
-	<li><a href='/userapi'>Login with Google (servlet)</a>
-	<li><a href='/glogin-new.html'>Login with Google (javascript new)</a>
-	
-<h2>Data Queries for managing Petitions</h2>	
-	<li><a href='/petition'>install petition like data (long)</a>
-	<li><a href='/pquery'>query petition data</a>
-			
+        m.mount(document.body, App);
+</script>
 </body>
 </html>

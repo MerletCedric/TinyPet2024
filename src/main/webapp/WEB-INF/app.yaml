@@ -1,1 +1,6 @@
 runtime: java17
+handlers:
+# All URLs beginning with /stylesheets are treated as paths to
+# static files in the stylesheets/ directory.
+- url: /stylesheets
+  static_dir: stylesheets

@@ -1,15 +1,40 @@
 package entity;
 
 public class User {
-    private int ID;
-    private String fullName;
-    private String firstName;
-    private String lastName;
-    private String email;
+    String userId;
+    String name;
+    String firstName;
+    String email;
 
-    public User(String fullName, String email, int ID) {
-        this.fullName = fullName;
+    public String getUserId() {
+        return this.userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
         this.email = email;
-        this.ID = ID;
-    }   
+    }
 }

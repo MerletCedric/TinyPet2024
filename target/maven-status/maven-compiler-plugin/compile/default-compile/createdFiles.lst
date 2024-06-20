@@ -1,2 +1,4 @@
-controller/creerPetition.class
+entity/Signataire.class
+entity/UserToken.class
 entity/User.class
+entity/Petition.class
