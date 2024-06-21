@@ -1,3 +1,11 @@
+function getUserInfo() {
+    const userJson = localStorage.getItem('user');
+    if (userJson) {
+        return JSON.parse(userJson);
+    }
+    return null;
+}
+
 let Petition = {
     title: '',
     description: '',
@@ -32,18 +40,19 @@ let Petition = {
         if(!Petition.autorId){
             PetitionForm.alertAuthentication = true;
             return;
-        } 
-        console.log(petId, Petition.userId)
+        }
+        const userInfo = getUserInfo();
+        console.log(petId, userInfo.userId)
         return m.request({
             method: "POST",
             url: "/signature",
             body: {
-                idPetition: petId,  // Changed from petitionId to petId
-                idUser: Petition.userId,
-                name: Petition.name
+                petId: petId,
+                userId: userInfo.userId,
+                nbSignatures: Petition.nbSignatures
             }
         }).then(function (result) {
-            PetitionList.loadPetitions();
+            Petition.loadPetitions();
         });
     }
 }

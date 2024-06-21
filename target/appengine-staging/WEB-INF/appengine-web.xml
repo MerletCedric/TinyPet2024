@@ -20,7 +20,7 @@
 <!-- [START env_variables] -->
     <env-variables>
 <!--         <env-var name="ENDPOINTS_SERVICE_NAME" value="sobike44.appspot.com" /> -->
-        <env-var name="ENDPOINTS_SERVICE_NAME" value="sobike44.appspot.com" />
+        <env-var name="ENDPOINTS_SERVICE_NAME" value="tinypetmanoncedricalphadjo.appspot.com" />
 
     </env-variables>
     <!-- [END env_variables] -->

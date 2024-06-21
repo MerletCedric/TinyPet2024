@@ -12,38 +12,37 @@ let Petition = {
         }    
         return m.request({
             method: "POST",
-            url: "/_ah/api/myApi/v1/postPetition",
+            url: "/postPetition",
             body: {
-                userToken: userToken,
+                userToken: petition.userToken,
                 petition: {
                     autorId: petition.autorId,
+                    autorName: petition.autorName,
                     title: petition.title,
                     description: petition.description
                 }
             }
         }).then(function (result) {
+            PetitionList.loadPetitions();
             Petition.title = '';
             Petition.description = '';
-            console.log(result)
-            PetitionList.loadPetitions();
         });
     },
     signPetition: function (petId) {    
         if(!Petition.autorId){
-            alert("Please sign in before signing the petittion")
+            PetitionForm.alertAuthentication = true;
             return;
         } 
         console.log(petId, Petition.userId)
         return m.request({
             method: "POST",
-            url: "/_ah/api/myApi/v1/signature",
+            url: "/signature",
             body: {
                 idPetition: petId,  // Changed from petitionId to petId
                 idUser: Petition.userId,
                 name: Petition.name
             }
         }).then(function (result) {
-            console.log(result);
             PetitionList.loadPetitions();
         });
     }
@@ -58,7 +57,7 @@ let PetitionForm = {
         {
             title: "Créer votre pétition",
             content: m("div", [
-                m("button.button.is-primary.is-large", { 
+                m("button.button.is-primary", { 
                     onclick: function() { 
                         if (!PetitionForm.petition.autorId) {
                             PetitionForm.alertAuthentication = true;

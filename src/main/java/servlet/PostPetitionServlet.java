@@ -1,7 +1,7 @@
 package servlet;
 
 import entity.UserToken;
-import endPoint.utility.GoogleAuthVerifier;
+import utility.GoogleAuthVerifier;
 import entity.Petition;
 
 import java.io.IOException;

@@ -44,12 +44,19 @@ let PetitionList = {
                     PetitionList.petitions.map(function(petition) {
                         return m('tr', [
                             m('td', [
-                                m('button.button.is-primary.btn-sign', "Signer"),
-                                m('p', 'Signé'+ petition.propertyMap.nbSignatures + ' fois.'),
+                                m('button.button.is-primary.btn-sign', 
+                                    {
+                                        onclick: function() {
+                                            console.log(petition.key.id);
+                                            Petition.signPetition(petition.key.id);
+                                        }
+                                    }, "Signer",
+                                ),
+                                m('p', petition.propertyMap.nbSignatures + ' signature(s) enregistrée(s)'), 
                             ]),
                             m('td', m('label', PetitionList.formatDate(petition.propertyMap.date))),
                             m('td', m('label', petition.propertyMap.title)),
-                            m('td', m('label', petition.propertyMap.autor)),
+                            m('td', m('label', petition.propertyMap.autorName)),
                             m('td', m('label', petition.propertyMap.description))
                         ]);
                     })

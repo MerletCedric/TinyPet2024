@@ -3,13 +3,30 @@ let PetitionList = {
     loadPetitions: function() {
         m.request({
             method: "GET",
-            url: "/_ah/api/myApi/v1/getPetitions",
+            url: "/getPetitions",
             withCredentials: true,
         })
         .then(function(result) {
-            PetitionList.petitions = result.items;
+            if (result && result.length > 0) {
+                PetitionList.petitions = result;
+            } else {
+                PetitionList.petitions = [];
+            }
+            console.log(result);
+            m.redraw();
+        })
+        .catch(function(error) {
+            console.error("Failed to load petitions:", error);
+            PetitionList.petitions = [];
             m.redraw();
         });
+    },
+    formatDate: function(dateString) {
+        const date = new Date(dateString);
+        const day = date.getUTCDate().toString().padStart(2, '0');
+        const month = (date.getUTCMonth() + 1).toString().padStart(2, '0');
+        const year = date.getUTCFullYear().toString().slice(-2);
+        return `${day}/${month}/${year}`;
     },
     view: function() {
         return m("div.petition-list", [
@@ -19,16 +36,21 @@ let PetitionList = {
                 m('table', { class: 'table is-striped' }, [
                     m('tr', [
                         m('th', { width: "50px" }, "Action"),
+                        m('th', { width: "100px" }, "Date"),
                         m('th', { width: "150px" }, "Titre"),
-                        m('th', { width: "100px" }, "Auteur"),
-                        m('th', { width: "200px" }, "Description")
+                        m('th', { width: "200px" }, "Auteur"),
+                        m('th', { width: "250px" }, "Description")
                     ]),
                     PetitionList.petitions.map(function(petition) {
                         return m('tr', [
-                            m('td', m('button.button.is-primary.btn-sign', "Signer")),
-                            m('td', m('label', petition.properties.title)),
-                            m('td', m('label', petition.properties.autor)),
-                            m('td', m('label', petition.properties.description))
+                            m('td', [
+                                m('button.button.is-primary.btn-sign', "Signer"),
+                                m('p', 'Signatures : '+ petition.propertyMap.nbSignatures),
+                            ]),
+                            m('td', m('label', PetitionList.formatDate(petition.propertyMap.date))),
+                            m('td', m('label', petition.propertyMap.title)),
+                            m('td', m('label', petition.propertyMap.autorName)),
+                            m('td', m('label', petition.propertyMap.description))
                         ]);
                     })
                 ])

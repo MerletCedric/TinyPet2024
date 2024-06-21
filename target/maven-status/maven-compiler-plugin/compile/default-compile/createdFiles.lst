@@ -1,4 +1,5 @@
+servlet/GetPetitionsServlet.class
 entity/UserToken.class
-entity/Signataire.class
+servlet/PostPetitionServlet.class
 entity/User.class
 entity/Petition.class

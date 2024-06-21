@@ -12,7 +12,7 @@
 		<servlet-class>com.google.api.server.spi.EndpointsServlet</servlet-class>
 		<init-param>
 			<param-name>services</param-name>
-			<param-value>endPoint.CreerPetitionEndPoint</param-value>
+			<param-value>endPoint.PetitionsEndPoint</param-value>
 		</init-param>
 	</servlet>
 	<!-- Route API method requests to the backend. -->
