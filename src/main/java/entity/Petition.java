@@ -18,8 +18,12 @@ public class Petition {
     return this.description;
    }
 
-   public Object getAutorName() {
+   public String getAutorName() {
       return this.autorName;
+   }
+
+   public String getAutorId() {
+      return this.autorId;
    }
 
    public void setAutorId(String autorId) {
@@ -32,5 +36,25 @@ public class Petition {
 
    public void setDescription(String description) {
       this.description = description;
+   }
+
+   public void setAutorName(String autorName) {
+      this.autorName = autorName;
+   }
+
+   public Date getDate() {
+      return this.date;
+   }
+
+   public void setDate(Date date) {
+      this.date = date;
+   }
+
+   public int getNbSignatures() {
+      return this.nbSignatures;
+   }
+
+   public void setNbSignatures(int nbSignatures) {
+      this.nbSignatures = nbSignatures;
    }
 }

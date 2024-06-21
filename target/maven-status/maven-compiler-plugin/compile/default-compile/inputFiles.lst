@@ -1,6 +1,9 @@
 /home/tancraymanon/tinypet/TinyPet2024/src/main/java/entity/Signataire.java
 /home/tancraymanon/tinypet/TinyPet2024/src/main/java/entity/Petition.java
+/home/tancraymanon/tinypet/TinyPet2024/src/main/java/servlet/SignatureServlet.java
 /home/tancraymanon/tinypet/TinyPet2024/src/main/java/entity/User.java
 /home/tancraymanon/tinypet/TinyPet2024/src/main/java/entity/UserToken.java
+/home/tancraymanon/tinypet/TinyPet2024/src/main/java/servlet/PostPetitionServlet.java
+/home/tancraymanon/tinypet/TinyPet2024/src/main/java/servlet/GetPetitionsServlet.java
 /home/tancraymanon/tinypet/TinyPet2024/src/main/java/endPoint/utility/GoogleAuthVerifier.java
 /home/tancraymanon/tinypet/TinyPet2024/src/main/java/endPoint/PetitionsEndPoint.java

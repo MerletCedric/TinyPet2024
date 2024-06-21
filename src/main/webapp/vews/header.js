@@ -2,17 +2,13 @@ function  handleCredentialResponse(response) {
     // decodeJwtResponse() 
     const responsePayload = jwt_decode(response.credential);
 
-    Petition.userId = responsePayload.sub;
-    Petition.authentificate=true;    
-    Petition.name=responsePayload.name;
-    Petition.userToken = response.credential;
-
     const userInfo = {
         userId: responsePayload.sub,
         authentificate: true,
         name: responsePayload.name
     };
 
+    Petition.userToken = response.credential;
     Petition.autorName = userInfo.name;
     Petition.autorId = userInfo.userId;
 

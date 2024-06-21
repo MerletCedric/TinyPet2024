@@ -1,4 +1,4 @@
-entity/Signataire.class
 entity/UserToken.class
+entity/Signataire.class
 entity/User.class
 entity/Petition.class
