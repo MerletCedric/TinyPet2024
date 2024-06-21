@@ -50,4 +50,7 @@ public class Signataire {
     public void setSignataires(List<String> signataires) {
         this.signataires = signataires;
     }
+
+    public void addSignataires(Object user) {
+    }
 }

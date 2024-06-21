@@ -36,95 +36,84 @@ import com.google.appengine.repackaged.com.google.gson.Gson;
 @WebServlet(name = "SignatureServlet", urlPatterns = {"/signature"})
 public class SignatureServlet extends HttpServlet {
 
-    
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        resp.setContentType("application/json");
         Gson gson = new Gson();
-        Signataire signataire = gson.fromJson(req.getReader(), Signataire.class);
-        String userId = req.getParameter("userId");
-
-        if (userId == null || signataire.getPetition() == null) {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            resp.getWriter().write("User ID and Petition are required");
-            return;
-        }
-
-        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-        Key petitionKey = KeyFactory.createKey("Petition", signataire.getPetition().getTitle());
-
-        TransactionOptions options = TransactionOptions.Builder.withXG(true);
-        Transaction txn = datastore.beginTransaction(options);
 
         try {
-            Entity petitionEntity = datastore.get(petitionKey);
-            Signataire existingSignataire = entityToSignataire(petitionEntity);
+            Map<String, Object> requestBody = gson.fromJson(req.getReader(), Map.class);
+            Map<String, Object> petitionData = (Map<String, Object>) requestBody.get("petition");
+            String userId = (String) requestBody.get("userId");
 
-            // Vérifier si l'utilisateur a déjà signé la pétition
-            if (existingSignataire.getUserId(userId) != null) {
-                resp.setStatus(HttpServletResponse.SC_CONFLICT);
-                resp.getWriter().write("User has already signed this petition");
+            if (petitionData== null || userId == null) {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                resp.getWriter().write(gson.toJson("Missing petitionId or userId."));
                 return;
             }
 
-            // Ajouter l'utilisateur aux signataires
-            existingSignataire.addToSignataire(userId);
+            Key petitionKey = KeyFactory.createKey("Petition", Long.parseLong(petitionData.get("id").toString()));
+            DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+            Entity petitionEntity;
+            try {
+                petitionEntity = datastore.get(petitionKey);
+            } catch (EntityNotFoundException e) {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                resp.getWriter().write(gson.toJson("Petition not exists in datastore"));
+                return;
+            }
+            // Vérification de l'existence du signataire dans le Datastore
+            Key signataireKey = KeyFactory.createKey("Signataire", userId);
+            Entity signataireEntity;
+            try {
+                signataireEntity = datastore.get(signataireKey);
+            } catch (EntityNotFoundException e) {
+                signataireEntity = new Entity("Signataire", userId);
+                signataireEntity.setProperty("signataires", new ArrayList<String>());
+                signataireEntity.setProperty("free", true);
+                signataireEntity.setProperty("nbSignatures", 0);
+            }
 
-            // Incrémenter le nombre de signatures
-            int nbSignatures = existingSignataire.getNbSignatures();
-            existingSignataire.setNbSignatures(nbSignatures + 1);
+            List<String> signataires = (List<String>) signataireEntity.getProperty("signataires");
+            boolean free = (Boolean) signataireEntity.getProperty("free");
+            int nbSignatures = (int) signataireEntity.getProperty("nbSignatures"); 
 
-            // Sauvegarder les changements
-            Entity updatedPetitionEntity = signataireToEntity(petitionKey, existingSignataire);
-            datastore.put(updatedPetitionEntity);
+            // Vérification si la liste des signataires est pleine
+            if (signataires != null && signataires.size() >= 40000) {
+                free = false; // Mettre à jour free à false si la liste est pleine
+            } else {
+                // Ajout de l'userId aux signataires si non présent
+                if (!signataires.contains(userId)) {
+                    signataires.add(userId);
+                    nbSignatures++; // Incrément de nbSignatures
+                } else {
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    resp.getWriter().write(gson.toJson("Already signed"));
+                    return;
+                }
+            }
 
+            // Mise à jour de l'entité Signataire
+            signataireEntity.setProperty("signataires", signataires);
+            signataireEntity.setProperty("free", free);
+            signataireEntity.setProperty("nbSignatures", nbSignatures);
+
+            petitionEntity.setProperty("nbSignatures", nbSignatures);
+
+            // Transaction pour enregistrer les modifications dans le Datastore
+            Transaction txn = datastore.beginTransaction();
+            datastore.put(signataireEntity);
+            datastore.put(petitionEntity);
             txn.commit();
 
-            resp.setContentType("application/json");
-            resp.getWriter().write(gson.toJson(existingSignataire));
-
-        } catch (EntityNotFoundException e) {
-            txn.rollback();
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            resp.getWriter().write("Petition not found");
-        } finally {
-            if (txn.isActive()) {
-                txn.rollback();
-            }
+            // Réponse de succès
+            resp.setStatus(HttpServletResponse.SC_OK);
+            resp.getWriter().write(gson.toJson("Signature added successfully."));
+            
+        } catch (Exception e) {
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().write(gson.toJson("Error processing request: " + e.getMessage()));
         }
-    }
 
-    private Signataire entityToSignataire(Entity entity) {
-        Signataire signataire = new Signataire();
-        Petition petition = new Petition();
-
-        petition.setTitle((String) entity.getProperty("title"));
-        petition.setAutorId((String) entity.getProperty("autorId"));
-        petition.setAutorName((String) entity.getProperty("autorName"));
-        petition.setDescription((String) entity.getProperty("description"));
-        petition.setDate((Date) entity.getProperty("date"));
-        petition.setNbSignatures(((Long) entity.getProperty("nbSignatures")).intValue());
-
-        signataire.setPetition(petition);
-        signataire.setNbSignatures(((Long) entity.getProperty("nbSignatures")).intValue());
-        signataire.setFree((Boolean) entity.getProperty("free"));
-        signataire.setSignataires((List<String>) entity.getProperty("signataires"));
-
-        return signataire;
-    }
-
-    private Entity signataireToEntity(Key key, Signataire signataire) {
-        Entity entity = new Entity(key);
-        Petition petition = signataire.getPetition();
-
-        entity.setProperty("title", petition.getTitle());
-        entity.setProperty("autorId", petition.getAutorId());
-        entity.setProperty("autorName", petition.getAutorName());
-        entity.setProperty("description", petition.getDescription());
-        entity.setProperty("date", petition.getDate());
-        entity.setProperty("nbSignatures", signataire.getNbSignatures());
-        entity.setProperty("free", signataire.getFree());
-        entity.setProperty("signataires", new ArrayList<>(signataire.getSignataires()));
-
-        return entity;
     }
 }

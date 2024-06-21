@@ -36,25 +36,26 @@ let Petition = {
             Petition.description = '';
         });
     },
-    signPetition: function(petitionId) {
+    signPetition: function(petId) {
         const userInfo = getUserInfo();
         if (!userInfo || !userInfo.userId) {
-            console.error("User ID not found");
+            PetitionForm.alertAuthentication = true;
             return;
         }
-    
         m.request({
             method: "POST",
             url: "/signature",
             withCredentials: true,
             body: {
                 petition: {
-                    petitionId: petitionId,
-                    // Vous pouvez ajouter d'autres informations de la pétition ici si nécessaire
+                    id: parseInt(petId),
+                    autorId: Petition.autorId,
+                    autorName: Petition.autorName,
+                    title: Petition.title,
+                    description: Petition.description,
+                    nbSignatures: Petition.nbSignatures
                 },
-                signataires: [userInfo.userId],
-                free: false,  // ou la valeur correcte pour ce champ
-                nbSignatures: 0  // ou la valeur correcte pour ce champ
+                userId: userInfo.userId
             }
         })
         .then(function(result) {
@@ -109,7 +110,7 @@ let PetitionForm = {
             }),
             PetitionForm.showNextButton ? m("div.form-navigation", [
                 PetitionForm.currentStep > 0 ? m("button.button", { onclick: function() { PetitionForm.currentStep--; } }, "Précédent") : null,
-                PetitionForm.currentStep < PetitionForm.steps.length - 1 ? m("button.button.is-primary", { onclick: function() { PetitionForm.currentStep++; } }, "Suivant") : m("button.button.is-success", { onclick: function() { console.log(PetitionForm.petition); Petition.createPetition(PetitionForm.petition); PetitionForm.resetForm(); } }, "Créer la pétition")
+                PetitionForm.currentStep < PetitionForm.steps.length - 1 ? m("button.button.is-primary", { onclick: function() { PetitionForm.currentStep++; } }, "Suivant") : m("button.button.is-success", { onclick: function() { Petition.createPetition(PetitionForm.petition); PetitionForm.resetForm(); } }, "Créer la pétition")
             ]) : null,
             PetitionForm.alertAuthentication ? m("div.notification.is-danger", { style: { marginTop: "10px" } }, [
                     m("button.delete", { onclick: function() { PetitionForm.alertAuthentication = false; } }),

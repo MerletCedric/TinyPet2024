@@ -26,7 +26,6 @@ let PetitionList = {
             } else {
                 PetitionList.petitions = [];
             }
-            console.log(result);
             m.redraw();
         })
         .catch(function(error) {
@@ -70,7 +69,6 @@ let PetitionList = {
                                 m('button.button.is-primary.btn-sign', 
                                     {
                                         onclick: function() {
-                                            console.log(petition.key.id);
                                             Petition.signPetition(petition.key.id);
                                         }
                                     }, "Signer",
