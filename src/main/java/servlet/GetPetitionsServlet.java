@@ -25,17 +25,36 @@ public class GetPetitionsServlet extends HttpServlet {
         resp.setContentType("application/json");
         Gson gson = new Gson();
 
-        try {
-            Query q = new Query("Petition").addSort("date", Query.SortDirection.DESCENDING);
-            DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-            PreparedQuery pq = datastore.prepare(q);
-            List<Entity> result = pq.asList(FetchOptions.Builder.withLimit(100));
+        String selection = req.getParameter("selection");
 
-            resp.setStatus(HttpServletResponse.SC_OK);
-            resp.getWriter().write(gson.toJson(result));
-        } catch (Exception e) {
-            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            resp.getWriter().write(gson.toJson("Error fetching petitions from Datastore: " + e.getMessage()));
+        if (selection == "topHundred") {
+            try {
+                Query q = new Query("Petition").addSort("date", Query.SortDirection.DESCENDING);
+                DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+                PreparedQuery pq = datastore.prepare(q);
+                List<Entity> result = pq.asList(FetchOptions.Builder.withLimit(100));
+    
+                resp.setStatus(HttpServletResponse.SC_OK);
+                resp.getWriter().write(gson.toJson(result));
+            } catch (Exception e) {
+                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                resp.getWriter().write(gson.toJson("Error fetching petitions from Datastore: " + e.getMessage()));
+            }
+        } else {
+            try {
+                Query q = new Query("Petition")
+                    .addSort("nbSignatures", Query.SortDirection.DESCENDING)
+                    .addSort("date", Query.SortDirection.DESCENDING);
+                DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+                PreparedQuery pq = datastore.prepare(q);
+                List<Entity> result = pq.asList(FetchOptions.Builder.withLimit(100));
+    
+                resp.setStatus(HttpServletResponse.SC_OK);
+                resp.getWriter().write(gson.toJson(result));
+            } catch (Exception e) {
+                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                resp.getWriter().write(gson.toJson("Error fetching petitions from Datastore: " + e.getMessage()));
+            }
         }
     }
 }

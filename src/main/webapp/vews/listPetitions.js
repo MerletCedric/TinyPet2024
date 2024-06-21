@@ -1,10 +1,14 @@
 let PetitionList = {
     petitions: [],
+    selection: 'topHundred',
     loadPetitions: function() {
         m.request({
             method: "GET",
             url: "/getPetitions",
             withCredentials: true,
+            body: {
+                selection: PetitionList.selection
+            }
         })
         .then(function(result) {
             if (result && result.length > 0) {
@@ -30,6 +34,12 @@ let PetitionList = {
     },
     view: function() {
         return m("div.petition-list", [
+            m("select.select.is-primary", { 
+                    onchange: (e) => PetitionList.selection = e.target.value,  
+                }, [
+                    m('option', { value: 'topHundred'}, 'Les plus signées'),
+                    m('option', { value: 'myPet'}, 'Mes pétitions')
+                ]),
             m("h2", { class: "title is-size-3" }, "Liste des pétitions créées"),
             PetitionList.petitions.length === 0 ? m("p", "Aucune pétition n'a été créée pour le moment.") : 
             m('div', [
