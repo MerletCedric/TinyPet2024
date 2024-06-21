@@ -26,8 +26,7 @@ public class GetPetitionsServlet extends HttpServlet {
         Gson gson = new Gson();
 
         String selection = req.getParameter("selection");
-
-        if (selection == "topHundred") {
+        if ("topHundred".equals(selection)) {
             try {
                 Query q = new Query("Petition").addSort("date", Query.SortDirection.DESCENDING);
                 DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -41,20 +40,7 @@ public class GetPetitionsServlet extends HttpServlet {
                 resp.getWriter().write(gson.toJson("Error fetching petitions from Datastore: " + e.getMessage()));
             }
         } else {
-            try {
-                Query q = new Query("Petition")
-                    .addSort("nbSignatures", Query.SortDirection.DESCENDING)
-                    .addSort("date", Query.SortDirection.DESCENDING);
-                DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-                PreparedQuery pq = datastore.prepare(q);
-                List<Entity> result = pq.asList(FetchOptions.Builder.withLimit(100));
-    
-                resp.setStatus(HttpServletResponse.SC_OK);
-                resp.getWriter().write(gson.toJson(result));
-            } catch (Exception e) {
-                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                resp.getWriter().write(gson.toJson("Error fetching petitions from Datastore: " + e.getMessage()));
-            }
+            //todo
         }
     }
 }

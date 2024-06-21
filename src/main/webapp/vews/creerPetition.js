@@ -36,25 +36,36 @@ let Petition = {
             Petition.description = '';
         });
     },
-    signPetition: function (petId) {    
-        if(!Petition.autorId){
-            PetitionForm.alertAuthentication = true;
+    signPetition: function(petitionId) {
+        const userInfo = getUserInfo();
+        if (!userInfo || !userInfo.userId) {
+            console.error("User ID not found");
             return;
         }
-        const userInfo = getUserInfo();
-        console.log(petId, userInfo.userId)
-        return m.request({
+    
+        m.request({
             method: "POST",
             url: "/signature",
+            withCredentials: true,
             body: {
-                petId: petId,
-                userId: userInfo.userId,
-                nbSignatures: Petition.nbSignatures
+                petition: {
+                    petitionId: petitionId,
+                    // Vous pouvez ajouter d'autres informations de la pétition ici si nécessaire
+                },
+                signataires: [userInfo.userId],
+                free: false,  // ou la valeur correcte pour ce champ
+                nbSignatures: 0  // ou la valeur correcte pour ce champ
             }
-        }).then(function (result) {
-            Petition.loadPetitions();
+        })
+        .then(function(result) {
+            console.log("Petition signed successfully:", result);
+            // Reload petitions if necessary
+            PetitionList.loadPetitions();
+        })
+        .catch(function(error) {
+            console.error("Failed to sign petition:", error);
         });
-    }
+    }    
 }
 
 let PetitionForm = {

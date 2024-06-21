@@ -1,12 +1,16 @@
 package servlet;
 
+import entity.Petition;
 import entity.Signataire;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -32,92 +36,95 @@ import com.google.appengine.repackaged.com.google.gson.Gson;
 @WebServlet(name = "SignatureServlet", urlPatterns = {"/signature"})
 public class SignatureServlet extends HttpServlet {
 
+    
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        resp.setContentType("application/json");
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Gson gson = new Gson();
-
-        String userId = req.getParameter("userId");
         Signataire signataire = gson.fromJson(req.getReader(), Signataire.class);
+        String userId = req.getParameter("userId");
 
-        if (userId == null || signataire.getPetId() == null) {
+        if (userId == null || signataire.getPetition() == null) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            resp.getWriter().write(gson.toJson("User ID and Petition ID are required"));
+            resp.getWriter().write("User ID and Petition are required");
             return;
         }
 
         DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-        Key petitionKey = KeyFactory.createKey("Petition", signataire.getPetId());
-
-        Filter userFilter = new FilterPredicate("userId", FilterOperator.EQUAL, userId);
-        Filter petitionFilter = new FilterPredicate("petitionId", FilterOperator.EQUAL, signataire.getPetId());
-        Filter signatureFilter = CompositeFilterOperator.and(petitionFilter, userFilter);
-
-        Query query = new Query("Signature").setFilter(signatureFilter);
-        PreparedQuery pq = datastore.prepare(query);
-        if (pq.countEntities(FetchOptions.Builder.withLimit(1)) > 0) {
-            resp.setStatus(HttpServletResponse.SC_CONFLICT);
-            resp.getWriter().write(gson.toJson("User has already signed this petition"));
-            return;
-        }
+        Key petitionKey = KeyFactory.createKey("Petition", signataire.getPetition().getTitle());
 
         TransactionOptions options = TransactionOptions.Builder.withXG(true);
         Transaction txn = datastore.beginTransaction(options);
 
         try {
-            Entity petition = datastore.get(petitionKey);
-            long nbSignatures = (long) petition.getProperty("nbSignatures");
-            nbSignatures += 1;
-            petition.setProperty("nbSignatures", nbSignatures);
+            Entity petitionEntity = datastore.get(petitionKey);
+            Signataire existingSignataire = entityToSignataire(petitionEntity);
 
-            Query signataireQuery = new Query("Signataire")
-                    .setFilter(new FilterPredicate("petitionId", FilterOperator.EQUAL, signataire.getPetId()))
-                    .addSort("index", Query.SortDirection.DESCENDING);
-            PreparedQuery signatairePQ = datastore.prepare(signataireQuery);
-            Entity lastSignataireEntity = signatairePQ.asSingleEntity();
-
-            List<String> signataires = null;
-            if (lastSignataireEntity != null) {
-                Object signatairesObj = lastSignataireEntity.getProperty("signataires");
-                if (signatairesObj instanceof List<?>) {
-                    signataires = (List<String>) signatairesObj;
-                }
+            // Vérifier si l'utilisateur a déjà signé la pétition
+            if (existingSignataire.getUserId(userId) != null) {
+                resp.setStatus(HttpServletResponse.SC_CONFLICT);
+                resp.getWriter().write("User has already signed this petition");
+                return;
             }
 
-            if (signataires == null || signataires.size() >= 40000) {
-                Entity newSignataireEntity = new Entity("Signataire");
-                newSignataireEntity.setProperty("petitionId", signataire.getPetId());
-                newSignataireEntity.setProperty("signataires", new ArrayList<>(Arrays.asList(userId)));
-                newSignataireEntity.setProperty("nbSignatures", 1);
-                newSignataireEntity.setProperty("index", lastSignataireEntity == null ? 1 : (long) lastSignataireEntity.getProperty("index") + 1);
-                newSignataireEntity.setProperty("free", signataires == null || signataires.size() < 40000);
-                datastore.put(newSignataireEntity);
-            } else {
-                signataires.add(userId);
-                lastSignataireEntity.setProperty("signataires", signataires);
-                lastSignataireEntity.setProperty("nbSignatures", signataires.size());
-                lastSignataireEntity.setProperty("free", signataires.size() < 40000);
-                datastore.put(lastSignataireEntity);
-            }
+            // Ajouter l'utilisateur aux signataires
+            existingSignataire.addToSignataire(userId);
 
-            datastore.put(petition);
+            // Incrémenter le nombre de signatures
+            int nbSignatures = existingSignataire.getNbSignatures();
+            existingSignataire.setNbSignatures(nbSignatures + 1);
+
+            // Sauvegarder les changements
+            Entity updatedPetitionEntity = signataireToEntity(petitionKey, existingSignataire);
+            datastore.put(updatedPetitionEntity);
 
             txn.commit();
 
-            resp.setStatus(HttpServletResponse.SC_OK);
-            resp.getWriter().write(gson.toJson("Petition signed successfully"));
+            resp.setContentType("application/json");
+            resp.getWriter().write(gson.toJson(existingSignataire));
+
         } catch (EntityNotFoundException e) {
             txn.rollback();
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            resp.getWriter().write(gson.toJson("Petition not found"));
-        } catch (Exception e) {
-            txn.rollback();
-            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            resp.getWriter().write(gson.toJson("Error processing request: " + e.getMessage()));
+            resp.getWriter().write("Petition not found");
         } finally {
             if (txn.isActive()) {
                 txn.rollback();
             }
         }
+    }
+
+    private Signataire entityToSignataire(Entity entity) {
+        Signataire signataire = new Signataire();
+        Petition petition = new Petition();
+
+        petition.setTitle((String) entity.getProperty("title"));
+        petition.setAutorId((String) entity.getProperty("autorId"));
+        petition.setAutorName((String) entity.getProperty("autorName"));
+        petition.setDescription((String) entity.getProperty("description"));
+        petition.setDate((Date) entity.getProperty("date"));
+        petition.setNbSignatures(((Long) entity.getProperty("nbSignatures")).intValue());
+
+        signataire.setPetition(petition);
+        signataire.setNbSignatures(((Long) entity.getProperty("nbSignatures")).intValue());
+        signataire.setFree((Boolean) entity.getProperty("free"));
+        signataire.setSignataires((List<String>) entity.getProperty("signataires"));
+
+        return signataire;
+    }
+
+    private Entity signataireToEntity(Key key, Signataire signataire) {
+        Entity entity = new Entity(key);
+        Petition petition = signataire.getPetition();
+
+        entity.setProperty("title", petition.getTitle());
+        entity.setProperty("autorId", petition.getAutorId());
+        entity.setProperty("autorName", petition.getAutorName());
+        entity.setProperty("description", petition.getDescription());
+        entity.setProperty("date", petition.getDate());
+        entity.setProperty("nbSignatures", signataire.getNbSignatures());
+        entity.setProperty("free", signataire.getFree());
+        entity.setProperty("signataires", new ArrayList<>(signataire.getSignataires()));
+
+        return entity;
     }
 }

@@ -44,11 +44,11 @@ public class Petition {
 
    public Date getDate() {
       return this.date;
-   }
+  }
 
-   public void setDate(Date date) {
+  public void setDate(Date date) {
       this.date = date;
-   }
+  }
 
    public int getNbSignatures() {
       return this.nbSignatures;

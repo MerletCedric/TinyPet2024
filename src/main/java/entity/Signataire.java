@@ -3,13 +3,17 @@ package entity;
 import java.util.List;
 
 public class Signataire {
-    private String petId;
+    private Petition petition;
     private List<String> signataires;
     private boolean free;
     private int nbSignatures;
     
-    public String getPetId() {
-        return petId;
+    public Petition getPetition() {
+        return this.petition;
+    }
+
+    public void setPetition(Petition petition) {
+        this.petition = petition;
     }
 
     public String getUserId(String userId) {
@@ -37,5 +41,13 @@ public class Signataire {
 
     public void setFree(boolean free) {
         this.free = free;
+    }
+
+    public List<String> getSignataires() {
+        return signataires;
+    }
+
+    public void setSignataires(List<String> signataires) {
+        this.signataires = signataires;
     }
 }

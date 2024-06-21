@@ -1,7 +1,0 @@
-indexes:
-- kind: "Score"
-  properties:
-  - name: "name"
-    direction: asc
-  - name: "score"
-    direction: desc

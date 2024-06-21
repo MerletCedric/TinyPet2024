@@ -1,13 +1,23 @@
+function getUserInfo() {
+    const userJson = localStorage.getItem('user');
+    if (userJson) {
+        return JSON.parse(userJson);
+    }
+    return null;
+}
+
 let PetitionList = {
     petitions: [],
     selection: 'topHundred',
     loadPetitions: function() {
+        const userInfo = getUserInfo();
         m.request({
             method: "GET",
             url: "/getPetitions",
             withCredentials: true,
-            body: {
-                selection: PetitionList.selection
+            params: {
+                selection: PetitionList.selection,
+                userId: userInfo.userId
             }
         })
         .then(function(result) {
@@ -35,7 +45,10 @@ let PetitionList = {
     view: function() {
         return m("div.petition-list", [
             m("select.select.is-primary", { 
-                    onchange: (e) => PetitionList.selection = e.target.value,  
+                    onchange: (e) => {
+                        PetitionList.selection = e.target.value;  
+                        PetitionList.loadPetitions(); // Recharger les pétitions après le changement de sélection
+                    }
                 }, [
                     m('option', { value: 'topHundred'}, 'Les plus signées'),
                     m('option', { value: 'myPet'}, 'Mes pétitions')
