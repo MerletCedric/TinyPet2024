@@ -1,0 +1,11 @@
+servlet/SignatureServlet$2.class
+servlet/GetPetitionsServlet.class
+servlet/SignatureServlet.class
+entity/UserToken.class
+servlet/PostPetitionServlet.class
+servlet/SignatureServlet$3.class
+servlet/SignatureServlet$1.class
+entity/Signataire.class
+utility/GoogleAuthVerifier.class
+entity/User.class
+entity/Petition.class
