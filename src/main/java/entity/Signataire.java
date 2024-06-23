@@ -1,5 +1,6 @@
 package entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Signataire {
@@ -7,6 +8,10 @@ public class Signataire {
     private List<String> signataires;
     private boolean free;
     private Long nbSignatures;
+
+    public Signataire() {
+        this.signataires = new ArrayList<String>();
+    }
     
     public String getPetId() {
         return this.petId;
@@ -14,10 +19,6 @@ public class Signataire {
 
     public void setPetId(String petitionId) {
         this.petId = petitionId;
-    }
-
-    public void addToSignataire(String userId) {
-        this.signataires.add(userId);
     }
 
     public Long getNbSignatures() {
@@ -37,13 +38,14 @@ public class Signataire {
     }
 
     public List<String> getSignataires() {
-        return signataires;
+        return this.signataires;
     }
 
     public void setSignataires(List<String> signataires) {
         this.signataires = signataires;
     }
 
-    public void addSignataires(Object user) {
+    public void addSignataires(String userId) {
+        this.signataires.add(userId);
     }
 }

@@ -24,6 +24,11 @@ Dans ce projet, nous avons dû implémenter un grand nombre de fonctionnalités 
 Avant toutes interaction avec notre application l'utilisateur doit s'authentifier avec un compte google.
 ## Creation d'une petition:
 Cette fonctionnalité clé de notre application offre la possibilité aux utilisateurs authentifiés de créer leurs propres pétitions. Afin de lancer une nouvelle pétition, l'utilisateur est invité à fournir des informations essentielles qui sont le `titre` et la `description` de la pétition.
-## Affichage des petitions :
+# Affichage des petitions :
 La page d'accueil affiche toutes les pétitions créées. 
-
+# Signer une pétition
+Un utilisateur peut signer une pétition
+# Afficher le top 100 des pétitions
+un utilisateur peut voir le top 100 des pétitions
+# Afficher mes pétitions
+un utilisateur peut voir les pétitions qu'il a signées

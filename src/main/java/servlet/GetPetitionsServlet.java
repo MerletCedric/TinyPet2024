@@ -14,6 +14,10 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
+import com.google.appengine.api.datastore.Query.Filter;
+import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.repackaged.com.google.gson.Gson;
 
 // Exemple simplifié pour inclure l'auteur dans la réponse JSON
@@ -26,9 +30,13 @@ public class GetPetitionsServlet extends HttpServlet {
         Gson gson = new Gson();
 
         String selection = req.getParameter("selection");
+        String userId = req.getParameter("userId");
+
         if ("topHundred".equals(selection)) {
             try {
-                Query q = new Query("Petition").addSort("date", Query.SortDirection.DESCENDING);
+                Query q = new Query("Petition")
+                    .addSort("date", Query.SortDirection.DESCENDING)
+                    .addSort("nbSignatures",  Query.SortDirection.DESCENDING);
                 DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
                 PreparedQuery pq = datastore.prepare(q);
                 List<Entity> result = pq.asList(FetchOptions.Builder.withLimit(100));
@@ -40,7 +48,19 @@ public class GetPetitionsServlet extends HttpServlet {
                 resp.getWriter().write(gson.toJson("Error fetching petitions from Datastore: " + e.getMessage()));
             }
         } else {
-            //todo
+            try {
+                Filter autorIdFilter = new FilterPredicate("autorId", FilterOperator.EQUAL, userId);
+                Query getSignataireQuery = new Query("Petition").setFilter(autorIdFilter).addSort("date",  Query.SortDirection.DESCENDING);
+                DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+                PreparedQuery pq = datastore.prepare(getSignataireQuery);
+                List<Entity> result = pq.asList(FetchOptions.Builder.withLimit(100));
+    
+                resp.setStatus(HttpServletResponse.SC_OK);
+                resp.getWriter().write(gson.toJson(result));
+            } catch (Exception e) {
+                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                resp.getWriter().write(gson.toJson("Error fetching petitions from Datastore: " + e.getMessage()));
+            }
         }
     }
 }

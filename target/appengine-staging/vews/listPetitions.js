@@ -26,6 +26,7 @@ let PetitionList = {
             } else {
                 PetitionList.petitions = [];
             }
+            console.log(PetitionList.petitions);
             m.redraw();
         })
         .catch(function(error) {
@@ -45,7 +46,8 @@ let PetitionList = {
         return m("div.petition-list", [
             m("select.select.is-primary", { 
                     onchange: (e) => {
-                        PetitionList.selection = e.target.value;  
+                        PetitionList.selection = e.target.value;
+                        console.log(PetitionList.selection);  
                         PetitionList.loadPetitions(); // Recharger les pétitions après le changement de sélection
                     }
                 }, [
