@@ -131,9 +131,9 @@ public class SignatureServlet extends HttpServlet {
                         signataire.setFree((boolean) signataireEntity.getProperty("free"));
                         signataire.setNbSignatures((Long) signataireEntity.getProperty("nbSignatures"));
 
-                        nbSignatures = (Long) petitionEntity.getProperty("nbSignature");
-                        petitionEntity.setProperty("nbSignature", (nbSignatures == null ? 0 : nbSignatures) + 1);
-                        signataireEntity.setProperty("nbSignature", (nbSignatures == null ? 0 : nbSignatures) + 1);
+                        nbSignatures = (Long) petitionEntity.getProperty("nbSignatures");
+                        petitionEntity.setProperty("nbSignatures", (nbSignatures == null ? 0 : nbSignatures) + 1);
+                        signataireEntity.setProperty("nbSignatures", (nbSignatures == null ? 0 : nbSignatures) + 1);
                         
                         signataire.addSignataires(userId);
                         signataireEntity.setProperty("signataires", signataire.getSignataires());
