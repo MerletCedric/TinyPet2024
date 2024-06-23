@@ -1,0 +1,7 @@
+indexes:
+- kind: Petition 
+  properties: 
+    - name: date
+      direction : asc  
+    - name: nbSignatures
+      direction : desc

@@ -1,7 +1,7 @@
 indexes:
-- kind: Score 
+- kind: Petition 
   properties: 
-    - name: name
-      direction : asc  
-    - name: score
+    - name: date
+      direction : desc  
+    - name: nbSignatures
       direction : desc 
