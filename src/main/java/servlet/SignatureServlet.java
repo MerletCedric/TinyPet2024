@@ -83,11 +83,19 @@ public class SignatureServlet extends HttpServlet {
 
         try {
             Filter petitionFilter = new FilterPredicate("petId", FilterOperator.EQUAL, petitionId);
-            Filter userFilter = new FilterPredicate("petId", FilterOperator.EQUAL, userId);
-            Filter isAlreadySignFilter = CompositeFilterOperator.and(petitionFilter, userFilter);
-            Query isAlreadySignQuery = new Query("Signataire").setFilter(isAlreadySignFilter);
-            PreparedQuery pq = datastore.prepare(isAlreadySignQuery);
-            if (pq.countEntities(FetchOptions.Builder.withLimit(1)) > 0) {
+            Query query = new Query("Signataire").setFilter(petitionFilter);
+            PreparedQuery pq = datastore.prepare(query);
+
+            boolean userIdFound = false;
+            for (Entity entity : pq.asIterable()) {
+                List<String> userIds = (List<String>) entity.getProperty("userIds");
+                if (userIds != null && userIds.contains(userId)) {
+                    userIdFound = true;
+                    break;
+                }
+            }
+
+            if (userIdFound) {
                 resp.setStatus(HttpServletResponse.SC_OK);
                 resp.getWriter().write(gson.toJson("Pétition déjà signée"));
                 return;
@@ -114,15 +122,19 @@ public class SignatureServlet extends HttpServlet {
                         signataire.setPetId((String) signataireEntity.getProperty("petitionKey"));
                         signataire.setSignataires((List<Long>) signataireEntity.getProperty("signataires"));
                         signataire.setFree((boolean) signataireEntity.getProperty("free"));
-                        signataire.setNbSignatures((int) (long) signataireEntity.getProperty("nbSignatures"));
+                        signataire.setNbSignatures((Long) signataireEntity.getProperty("nbSignatures"));
 
                         nbSignatures = (Long) petitionEntity.getProperty("nbSignature");
                         petitionEntity.setProperty("nbSignature", (nbSignatures == null ? 0 : nbSignatures) + 1);
                         signataireEntity.setProperty("nbSignature", (nbSignatures == null ? 0 : nbSignatures) + 1);
-                        signataire.addSignataires(userId);
-                        signataireEntity.setProperty("signataires", signataire.getSignataires());
-                        if (signataire.getSignataires().size() >= 40000) {
-                            signataireEntity.setProperty("free", false);
+                        
+                        // Ajouter userId à la liste des signataires
+                        if (!signataire.getSignataires().contains(userId)) {
+                            signataire.addSignataires(userId);
+                            signataireEntity.setProperty("signataires", signataire.getSignataires());
+                            if (signataire.getSignataires().size() >= 40000) {
+                                signataireEntity.setProperty("free", false);
+                            }
                         }
                     } else {
                         // Récupérer l'entité Petition pour la mettre à jour
@@ -136,7 +148,7 @@ public class SignatureServlet extends HttpServlet {
                         signataire.setFree(true);
 
                         // Configurer l'entité Signataire avec les propriétés appropriées
-                        signataireEntity.setProperty("petitionId", petitionId);
+                        signataireEntity.setProperty("petId", petitionId);
                         signataireEntity.setProperty("signataires", signataire.getSignataires());
                         signataireEntity.setProperty("free", signataire.getFree());
                         signataireEntity.setProperty("nbSignatures", (nbSignatures == null ? 0 : nbSignatures) + 1);

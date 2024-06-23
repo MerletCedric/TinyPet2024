@@ -4,9 +4,9 @@ import java.util.List;
 
 public class Signataire {
     private String petId;
-    private List<Long> signataires;
+    private List<String> signataires;
     private boolean free;
-    private int nbSignatures;
+    private Long nbSignatures;
     
     public String getPetId() {
         return this.petId;
@@ -16,15 +16,15 @@ public class Signataire {
         this.petId = petitionId;
     }
 
-    public void addToSignataire(Long userId) {
+    public void addToSignataire(String userId) {
         this.signataires.add(userId);
     }
 
-    public int getNbSignatures() {
+    public Long getNbSignatures() {
         return this.nbSignatures;
     }
 
-    public void setNbSignatures(int nbSignatures) {
+    public void setNbSignatures(Long nbSignatures) {
         this.nbSignatures = nbSignatures;
     }
 
@@ -36,11 +36,11 @@ public class Signataire {
         this.free = free;
     }
 
-    public List<Long> getSignataires() {
+    public List<String> getSignataires() {
         return signataires;
     }
 
-    public void setSignataires(List<Long> signataires) {
+    public void setSignataires(List<String> signataires) {
         this.signataires = signataires;
     }
 
