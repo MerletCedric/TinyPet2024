@@ -3,27 +3,20 @@ package entity;
 import java.util.List;
 
 public class Signataire {
-    private Petition petition;
-    private List<String> signataires;
+    private String petId;
+    private List<Long> signataires;
     private boolean free;
     private int nbSignatures;
     
-    public Petition getPetition() {
-        return this.petition;
+    public String getPetId() {
+        return this.petId;
     }
 
-    public void setPetition(Petition petition) {
-        this.petition = petition;
+    public void setPetId(String petitionId) {
+        this.petId = petitionId;
     }
 
-    public String getUserId(String userId) {
-        return signataires.stream()
-            .filter(signataire -> signataire.equals(userId))
-            .findFirst()
-            .orElse(null);
-    }
-
-    public void addToSignataire(String userId) {
+    public void addToSignataire(Long userId) {
         this.signataires.add(userId);
     }
 
@@ -43,11 +36,11 @@ public class Signataire {
         this.free = free;
     }
 
-    public List<String> getSignataires() {
+    public List<Long> getSignataires() {
         return signataires;
     }
 
-    public void setSignataires(List<String> signataires) {
+    public void setSignataires(List<Long> signataires) {
         this.signataires = signataires;
     }
 

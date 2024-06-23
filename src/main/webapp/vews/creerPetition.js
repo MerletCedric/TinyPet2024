@@ -38,6 +38,8 @@ let Petition = {
     },
     signPetition: function(petId) {
         const userInfo = getUserInfo();
+        console.log(petId);
+        console.log(userInfo.userId);
         if (!userInfo || !userInfo.userId) {
             PetitionForm.alertAuthentication = true;
             return;
@@ -46,15 +48,11 @@ let Petition = {
             method: "POST",
             url: "/signature",
             withCredentials: true,
+            headers: {
+                'Content-Type': 'application/json'
+            },
             body: {
-                petition: {
-                    id: parseInt(petId),
-                    autorId: Petition.autorId,
-                    autorName: Petition.autorName,
-                    title: Petition.title,
-                    description: Petition.description,
-                    nbSignatures: Petition.nbSignatures
-                },
+                petitionId: petId,
                 userId: userInfo.userId
             }
         })

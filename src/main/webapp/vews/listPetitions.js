@@ -17,7 +17,7 @@ let PetitionList = {
             withCredentials: true,
             params: {
                 selection: PetitionList.selection,
-                userId: userInfo.userId
+                userId: userInfo.userId ? userInfo.userId : ''
             }
         })
         .then(function(result) {
